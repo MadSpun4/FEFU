@@ -21,8 +21,8 @@ int main()
 
         float x = distribution(gen);
         float y = distribution(gen);
-        cout << x << endl;
-        cout << y << endl;
+        //cout << x << endl;
+        //cout << y << endl;
         float distance = sqrt(x * x + y * y); // по формуле окружности
 
         int choice = 1;
@@ -31,11 +31,11 @@ int main()
         } else if ((distance >= aim_1) and (distance < aim_2)) {
             choice = choice << 1; // = 2
         } else if ((distance >= aim_2) and (distance < aim_3)) {
-            choice = (choice << 1) & choice; // = 3
+            choice = (choice << 1) | choice; // = 3
         } else if ((distance >= aim_3) and (distance < aim_4)) {
             choice = (choice << 2); // = 4
         } else if ((distance >= aim_4) and (distance < aim_5)) {
-            choice = (choice << 2) & choice; // = 5
+            choice = (choice << 2) | choice; // = 5
         }
 
         switch (choice)
@@ -43,37 +43,37 @@ int main()
         case 1:
             score += 5;
             cout << "+5 scores!" << endl;
-            cout << distance << endl;
-            cout << x << " " << y << endl;
+            //cout << distance << endl;
+            //cout << x << " " << y << endl;
             break;
         case 2:
             score += 4;
             cout << "+4 scores!" << endl;
-            cout << distance << endl;
-            cout << x << " " << y << endl;
+            //cout << distance << endl;
+            //cout << x << " " << y << endl;
             break;
         case 3:
             score += 3;
             cout << "+3 scores!" << endl;
-            cout << distance << endl;
-            cout << x << " " << y << endl;
+            //cout << distance << endl;
+            //cout << x << " " << y << endl;
             break;
         case 4:
             score += 2;
             cout << "+2 scores!" << endl;
-            cout << distance << endl;
-            cout << x << " " << y << endl;
+            //cout << distance << endl;
+            //cout << x << " " << y << endl;
             break;
         case 5:
             score += 1;
             cout << "+1 scores!" << endl;
-            cout << distance << endl;
-            cout << x << " " << y << endl;
+            //cout << distance << endl;
+            //cout << x << " " << y << endl;
             break;
         default:
             cout << "+0 scores!\nMiss!" << endl; 
-            cout << distance << endl;
-            cout << x << " " << y << endl;
+            //cout << distance << endl;
+            //cout <<  x << " " << y << endl;
             break;                               
         }
         numberOfShots++;
