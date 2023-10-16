@@ -13,14 +13,24 @@ int main()
     int numberOfShots = 0;
     int score = 0;
     float aim_1 = 1.0, aim_2 = 2.0, aim_3 = 3.0, aim_4 = 4.0, aim_5 = 5.0;
-    
+    float X = 10, Y = 10;
+
     while (numberOfShots != 5) {
         cout << endl;
-        cout << "Press << Enter >> to shoot" << endl;
-        cin.get();
+        
+        cout << "Ener x and y of soot in (-5; 5)" << endl;
+        do {
+            cin >> (X);
+            cin >> (Y);
+            if (!((X < 5) and (X > -5)) and !((Y < 5) and (Y > -5))) {
+                cout << "Coordinates of soot must be in (-5; 5)" << endl;
+                cout << "Try again!" << endl;
+            }
+        }
+        while (!((X < 5) and (X > -5)) and !((Y < 5) and (Y > -5)));
 
-        float x = distribution(gen);
-        float y = distribution(gen);
+        float x = distribution(gen) + X;
+        float y = distribution(gen) + Y;
         //cout << x << endl;
         //cout << y << endl;
         float distance = sqrt(x * x + y * y); // по формуле окружности
@@ -77,7 +87,8 @@ int main()
             break;                               
         }
         numberOfShots++;
-    }
+    };
+
     cout << endl;
     if (score < 10) {
         cout << "LOOSER!" << endl;
