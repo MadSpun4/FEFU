@@ -59,16 +59,40 @@ public:
 
 };
 
+class Son : public Mother
+{
+public:
+    Son(string nameVal, unsigned short int ageVal, bool genderVal)
+        : Mother(nameVal, ageVal, genderVal) {}
+
+};
+
+class Daughter : public Mother
+{
+public:
+    Daughter(string nameVal, unsigned short int ageVal, bool genderVal)
+        : Mother(nameVal, ageVal, genderVal) {}
+
+};
+
+class Grandson : public Daughter
+{
+public:
+    Grandson(string nameVal, unsigned short int ageVal, bool genderVal)
+        : Daughter(nameVal, ageVal, genderVal) {}
+        
+};
+
 
 
 int main() {
-    Mother Borya("Borya", 22, 1); 
+    Grandson Borya("Borya", 22, 1); 
     Human Ilya("Ilya", 22, 1);
     cout << Borya << endl;
     cout << Ilya << endl;
 
-    Borya.setName("Mama");
-    Borya.setGender(0);
+    Borya.setName("Grandson");
+    Borya.setGender(1);
     cout << Borya << endl;
 
     return 0;
