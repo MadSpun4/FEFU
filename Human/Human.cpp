@@ -10,6 +10,12 @@ private:
     bool Gender;
 
 public:
+    Human(){
+        Name = "";
+        Age = 0;
+        Gender = false;
+    }
+
     Human(string nameVal, unsigned short int ageVal, bool genderVal) {
         Name = nameVal;
         Age = ageVal;
@@ -43,6 +49,7 @@ public:
         return Gender;
     }
 
+
     friend ostream& operator<<(ostream& os, const Human& hm) {
         os << "Name: " << hm.Name << "\n" << "Age: " << hm.Age << "\n"
         << "Gender: " << (hm.Gender ? "Male" : "Female") << endl;
@@ -51,27 +58,36 @@ public:
     }
 };
 
-class Mother : public Human
+class Mother : virtual public Human
 {
 public:
     Mother(string nameVal, unsigned short int ageVal, bool genderVal)
         : Human(nameVal, ageVal, genderVal) {}
 
+
 };
 
-class Son : public Mother
+class Father : virtual public Human
+{
+public:
+    Father(string nameVal, unsigned short int ageVal, bool genderVal)
+        : Human(nameVal, ageVal, genderVal) {}
+
+};
+
+class Son : public Mother, public Father
 {
 public:
     Son(string nameVal, unsigned short int ageVal, bool genderVal)
-        : Mother(nameVal, ageVal, genderVal) {}
+        : Mother(nameVal, ageVal, genderVal), Father(nameVal, ageVal, genderVal) {}
 
 };
 
-class Daughter : public Mother
+class Daughter : public Mother, public Father
 {
 public:
     Daughter(string nameVal, unsigned short int ageVal, bool genderVal)
-        : Mother(nameVal, ageVal, genderVal) {}
+        : Mother(nameVal, ageVal, genderVal), Father(nameVal, ageVal, genderVal) {}
 
 };
 
@@ -83,17 +99,35 @@ public:
         
 };
 
+class Parent
+{
+
+public:
+    virtual void caugh() = 0;
+
+};
+
+class SonOfParent : public Parent
+{
+public:
+    void caugh() override {
+        cout << "Kh-kh" << endl;
+    }
+};
 
 
 int main() {
-    Grandson Borya("Borya", 22, 1); 
+    Daughter Borya("Borya", 22, 1); 
     Human Ilya("Ilya", 22, 1);
     cout << Borya << endl;
     cout << Ilya << endl;
 
-    Borya.setName("Grandson");
-    Borya.setGender(1);
+    Borya.setName("Daughter"); // поэксперементировал с множественным наследовнием - не понравилось.
+    Borya.setGender(1);        // после добавления все сдохло нахрен
     cout << Borya << endl;
+
+    SonOfParent Roma; // вроде норм тема
+    Roma.caugh();
 
     return 0;
 }
