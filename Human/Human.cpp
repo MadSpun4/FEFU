@@ -51,9 +51,19 @@ public:
     }
 };
 
+class Mother : public Human
+{
+public:
+    Mother(string nameVal, unsigned short int ageVal, bool genderVal)
+        : Human(nameVal, ageVal, genderVal) {}
+
+};
+
+
+
 int main() {
-    Human Borya("Borya", 22, true);
-    Human Ilya("Ilya", 22, true);
+    Mother Borya("Borya", 22, 1); 
+    Human Ilya("Ilya", 22, 1);
     cout << Borya << endl;
     cout << Ilya << endl;
 
