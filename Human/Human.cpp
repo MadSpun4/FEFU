@@ -19,6 +19,30 @@ public:
 
     };
 
+    void setName(string name) {
+        Name = name;
+    }
+    
+    void setAge(unsigned short int age) {
+        Age = age;
+    }
+
+    void setGender(bool gender) {
+        Gender = gender;
+    }
+
+    string getName() {
+        return Name;
+    }
+
+    int getAge() {
+        return Age;
+    }
+
+    bool getGender() {
+        return Gender;
+    }
+
     friend ostream& operator<<(ostream& os, const Human& hm) {
         os << "Name: " << hm.Name << "\n" << "Age: " << hm.Age << "\n"
         << "Gender: " << (hm.Gender ? "Male" : "Female") << endl;
@@ -32,6 +56,6 @@ int main() {
     Human Ilya("Ilya", 22, true);
     cout << Borya << endl;
     cout << Ilya << endl;
-    
+
     return 0;
 }
