@@ -67,5 +67,9 @@ int main() {
     cout << Borya << endl;
     cout << Ilya << endl;
 
+    Borya.setName("Mama");
+    Borya.setGender(0);
+    cout << Borya << endl;
+
     return 0;
 }
