@@ -115,12 +115,16 @@ public:
     }
 };
 
+enum ConstMark { BASE, ALWAYS_FIVE}; // всегда одна оценка. Можно добавить другие оценки
+
 class Teacher {
 private:
     string name;
     Mood mood;
+    ConstMark constMark;
 public:
-    Teacher(const string& Name, Mood Mood) : name(Name), mood(Mood) {}
+    Teacher(const string& Name, Mood Mood, ConstMark ConstMark = BASE)
+        : name(Name), mood(Mood), constMark(ConstMark) {}
 
     void changeMood(Mood newMood) {
         mood = newMood;
@@ -132,13 +136,18 @@ public:
 
     void giveMoodMark(Student& student) {
         int mark;
-        if (mood == GOOD) {
-            mark = student.isHonorsStudent() ? 5 : 4;
-        } else { 
-            if (student.isHonorsStudent()) {
-                mark = rand() % 2 + 4; // 4 или 5
-            } else {
-                mark = rand() % 2 + 2; // 2 или 3
+        // если надо будет добавить другие оценки, тогда else if и тд
+        if (constMark == ALWAYS_FIVE) { 
+            mark = 5;
+        } else { // нормальное оценивание
+            if (mood == GOOD) {
+                mark = student.isHonorsStudent() ? 5 : 4;
+            } else { 
+                if (student.isHonorsStudent()) {
+                    mark = rand() % 2 + 4; // 4 или 5
+                } else {
+                    mark = rand() % 2 + 2; // 2 или 3
+                }
             }
         }
         student.addMark(mark);
@@ -184,7 +193,7 @@ int main() {
     addStudent(student1);
     addStudent(student2);
 
-    Teacher* teacher1 = new Teacher("Vsiliy Vsilievich", BAD);
+    Teacher* teacher1 = new Teacher("Vsiliy Vsilievich", BAD, BASE);
     teacher1->giveMark(*student1, 5);
     teacher1->giveMark(*student1, 4);
     teacher1->giveMark(*student2, 4);
@@ -207,6 +216,12 @@ int main() {
     cout << endl;
     student2->printMarks();
     cout << endl;
+
+    Teacher* teacher2 = new Teacher("Valera", BAD, ALWAYS_FIVE);
+    teacher2->giveMoodMark(*student1);
+    student1->printMarks();
+    cout << endl;
+
 
     printHonorsStudents();
 
