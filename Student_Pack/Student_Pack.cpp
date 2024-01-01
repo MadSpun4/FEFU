@@ -81,7 +81,6 @@ using namespace std;
 class Student {
 private:
     vector<int> marks;
-    static vector<Student> students;
     string name;
 
 public:
@@ -89,10 +88,10 @@ public:
 
     }
     
-
     void addMark(int mark) {
         marks.push_back(mark);
     }
+    
 
     bool isHonorsStudent() const {
         double sum = 0.0;
@@ -101,36 +100,54 @@ public:
         }
         return sum / marks.size() >= 4.5;  // 4.5+ = отличник
     }
-
-    static void addStudent(const Student& student) {
-        students.push_back(student);
-    }
-
-    static void printHonorsStudents() {
-        for (int i = 0; i < students.size(); i++) {
-            if (students[i].isHonorsStudent()) {
-                cout << students[i].name << ": отличник" << endl;
-            } else {
-                cout << students[i].name << ": не отличник" << endl;
-            }
-        }
+     
+    string getName() const {
+        return name;
     }
 };
 
-vector<Student> Student::students;
+class Teacher {
+private:
+    string name;
+public:
+    Teacher(const string& Name) : name(Name) {}
+
+    void giveMark(Student& student, int mark) {
+        student.addMark(mark);
+    }
+
+};
+
+vector<Student*> students;
+
+void addStudent(Student* student) {
+    students.push_back(student);
+}
+
+void printHonorsStudents() {
+    for (const auto student : students) {
+        cout << student->getName() << ": " << (student->isHonorsStudent() ? "отличник" : "не отличник") << endl;
+    }
+}
 
 int main() {
-    Student student1("Ura");
-    student1.addMark(5);
-    student1.addMark(4);
-    Student::addStudent(student1);
+    Student* student1 = new Student("Ura");
+    Student* student2 = new Student("Dima");
 
-    Student student2("Dima");
-    student2.addMark(3);
-    student2.addMark(2);
-    Student::addStudent(student2);
+    addStudent(student1);
+    addStudent(student2);
 
-    Student::printHonorsStudents();
+    Teacher teacher1("Vsiliy Vsilievich");
+    teacher1.giveMark(*student1, 5);
+    teacher1.giveMark(*student1, 4);
+    teacher1.giveMark(*student2, 4);
+    teacher1.giveMark(*student2, 3);
+
+    printHonorsStudents();
+
+    for (auto student : students) {
+        delete student;
+    }
 
     return 0;
 }
