@@ -143,7 +143,24 @@ public:
         }
         student.addMark(mark);
     }
+};
 
+class Lesson {
+private:
+    Teacher* teacher;
+    vector<Student*> students;
+
+public:
+    Lesson(Teacher* Teacher, const vector<Student*>& Student) : teacher(Teacher), students(Student) {}
+
+    void doLesson() {
+        for (auto& student : students) {
+            int numMarks = rand() % 3 + 1; // от 1 до 3 оценок за урок каждому пришедшему студенту
+            for (int i = 0; i < numMarks; i++) {
+                teacher->giveMoodMark(*student);
+            }
+        }
+    }
 };
 
 vector<Student*> students;
@@ -167,17 +184,29 @@ int main() {
     addStudent(student1);
     addStudent(student2);
 
-    Teacher teacher1("Vsiliy Vsilievich", BAD);
-    teacher1.giveMark(*student1, 5);
-    teacher1.giveMark(*student1, 4);
-    teacher1.giveMark(*student2, 4);
-    teacher1.giveMark(*student2, 3);
+    Teacher* teacher1 = new Teacher("Vsiliy Vsilievich", BAD);
+    teacher1->giveMark(*student1, 5);
+    teacher1->giveMark(*student1, 4);
+    teacher1->giveMark(*student2, 4);
+    teacher1->giveMark(*student2, 3);
 
     student1->printMarks();
+    cout << endl;
 
-    teacher1.giveMoodMark(*student1);
+    teacher1->giveMoodMark(*student1);
 
     student1->printMarks();
+    cout << endl;
+
+    Lesson lesson1(teacher1, {student1, student2});
+    lesson1.doLesson();
+
+    cout << endl;
+
+    student1->printMarks();
+    cout << endl;
+    student2->printMarks();
+    cout << endl;
 
     printHonorsStudents();
 
@@ -185,6 +214,7 @@ int main() {
     for (auto student : students) {
         delete student;
     }
+    delete teacher1;
 
     return 0;
 }
