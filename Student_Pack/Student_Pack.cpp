@@ -122,9 +122,11 @@ private:
     string name;
     Mood mood;
     ConstMark constMark;
+    int moodChangeFrequency; // частота изменения настроения у учителя (опционально)
+    int markCount;
 public:
-    Teacher(const string& Name, Mood Mood, ConstMark ConstMark = BASE)
-        : name(Name), mood(Mood), constMark(ConstMark) {}
+    Teacher(const string& Name, Mood Mood, ConstMark ConstMark = BASE, int MoodChangeFrequency = 5)
+        : name(Name), mood(Mood), constMark(ConstMark), moodChangeFrequency(MoodChangeFrequency), markCount(0) {}
 
     void changeMood(Mood newMood) {
         mood = newMood;
@@ -132,6 +134,10 @@ public:
 
     void giveMark(Student& student, int mark) {
         student.addMark(mark);
+    }
+
+    void randomlyChangeMood() {
+        mood = static_cast<Mood>(rand() % 2); // 1 или 2 настроение из Mood
     }
 
     void giveMoodMark(Student& student) {
@@ -151,6 +157,12 @@ public:
             }
         }
         student.addMark(mark);
+        // смена настроения
+        markCount++;
+        if (markCount >= moodChangeFrequency) {
+            randomlyChangeMood();
+            markCount = 0;
+        }
     }
 };
 
@@ -193,7 +205,7 @@ int main() {
     addStudent(student1);
     addStudent(student2);
 
-    Teacher* teacher1 = new Teacher("Vsiliy Vsilievich", BAD, BASE);
+    Teacher* teacher1 = new Teacher("Vsiliy Vsilievich", BAD, BASE, 5);
     teacher1->giveMark(*student1, 5);
     teacher1->giveMark(*student1, 4);
     teacher1->giveMark(*student2, 4);
@@ -217,8 +229,21 @@ int main() {
     student2->printMarks();
     cout << endl;
 
-    Teacher* teacher2 = new Teacher("Valera", BAD, ALWAYS_FIVE);
+    Teacher* teacher2 = new Teacher("Valera", BAD, ALWAYS_FIVE, 5);
     teacher2->giveMoodMark(*student1);
+    student1->printMarks();
+    cout << endl;
+    cout << endl;
+
+    lesson1.doLesson();
+    student1->printMarks();
+    cout << endl;
+
+    lesson1.doLesson();
+    student1->printMarks();
+    cout << endl;
+
+    lesson1.doLesson();
     student1->printMarks();
     cout << endl;
 
