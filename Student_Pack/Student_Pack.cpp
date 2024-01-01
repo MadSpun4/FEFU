@@ -75,8 +75,11 @@
 
 #include <iostream>
 #include <vector>
+#include <cstdlib> // Для rand()
 
 using namespace std;
+
+enum Mood { GOOD, BAD };
 
 class Student {
 private:
@@ -87,6 +90,12 @@ public:
     Student(const string Name) : name(Name) {
 
     }
+
+    void printMarks() const {
+        for (int mark : marks) {
+            cout << mark << " ";
+        }
+    }
     
     void addMark(int mark) {
         marks.push_back(mark);
@@ -95,8 +104,8 @@ public:
 
     bool isHonorsStudent() const {
         double sum = 0.0;
-        for (int i = 0; i < marks.size(); i++) {
-            sum += marks[i];
+        for (int mark : marks) {
+            sum += mark;
         }
         return sum / marks.size() >= 4.5;  // 4.5+ = отличник
     }
@@ -109,10 +118,29 @@ public:
 class Teacher {
 private:
     string name;
+    Mood mood;
 public:
-    Teacher(const string& Name) : name(Name) {}
+    Teacher(const string& Name, Mood Mood) : name(Name), mood(Mood) {}
+
+    void changeMood(Mood newMood) {
+        mood = newMood;
+    }
 
     void giveMark(Student& student, int mark) {
+        student.addMark(mark);
+    }
+
+    void giveMoodMark(Student& student) {
+        int mark;
+        if (mood == GOOD) {
+            mark = student.isHonorsStudent() ? 5 : 4;
+        } else { 
+            if (student.isHonorsStudent()) {
+                mark = rand() % 2 + 4; // 4 или 5
+            } else {
+                mark = rand() % 2 + 2; // 2 или 3
+            }
+        }
         student.addMark(mark);
     }
 
@@ -131,19 +159,28 @@ void printHonorsStudents() {
 }
 
 int main() {
+    srand(time(0));
+
     Student* student1 = new Student("Ura");
     Student* student2 = new Student("Dima");
 
     addStudent(student1);
     addStudent(student2);
 
-    Teacher teacher1("Vsiliy Vsilievich");
+    Teacher teacher1("Vsiliy Vsilievich", BAD);
     teacher1.giveMark(*student1, 5);
     teacher1.giveMark(*student1, 4);
     teacher1.giveMark(*student2, 4);
     teacher1.giveMark(*student2, 3);
 
+    student1->printMarks();
+
+    teacher1.giveMoodMark(*student1);
+
+    student1->printMarks();
+
     printHonorsStudents();
+
 
     for (auto student : students) {
         delete student;
