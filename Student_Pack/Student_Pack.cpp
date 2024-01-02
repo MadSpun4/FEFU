@@ -79,7 +79,7 @@
 
 using namespace std;
 
-enum Mood { GOOD, BAD };
+enum Mood { GOOD, BAD }; // настроение учителя и родителя
 
 class Student {
 private:
@@ -112,6 +112,82 @@ public:
      
     string getName() const {
         return name;
+    }
+};
+
+class Parent {
+private:
+    string name;
+    Mood mood;
+    vector<Student*> children;
+
+public:
+    Parent(const string& Name, Mood initialMood, const vector<Student*>& Children)
+        : name(Name), mood(initialMood), children(Children) {}
+
+    void changeMood(Mood newMood) {
+        mood = newMood;
+    }
+
+    void talkAboutEachChild() {
+        for (const auto& child : children) {
+            cout << name << " говорит о " << child->getName();
+            if (mood == GOOD) {
+                cout << ": мой ребенок - " << (child->isHonorsStudent() ? "отличник" : "молодец") << endl;
+            } else {
+                cout << ": мой ребенок бездарь" << endl;
+            }
+        }
+    }
+
+    void talkAboutRandomChild() {
+        int randomIndex = rand() % children.size();
+        Student* child = children[randomIndex];
+
+        cout << name << " говорит о " << child->getName();
+        if (mood == GOOD) {
+            cout << ": мой ребенок - " << (child->isHonorsStudent() ? "отличник" : "молодец") << endl;
+        } else {
+            cout << ": мой ребенок бездарь" << endl;
+        }
+    }
+
+    void talkAboutChildrenInGeneral() {
+        int honorsCount = 0;
+        for (const auto& child : children) {
+            if (child->isHonorsStudent()) {
+                honorsCount++;
+            }
+        }
+        bool mostlyHonors = honorsCount > children.size() / 2;
+
+        cout << name << " говорит о своих детях в целом: ";
+        if (mood == GOOD) {
+            cout << (mostlyHonors ? "Большинство моих детей - отличники!" : "Мои дети молодцы!") << endl;
+        } else {
+            cout << "Мои дети бездари." << endl;
+        }
+    }
+
+    void talkAboutSpecificChild(Student* child) {
+        bool isChildFound = false;
+        for (const auto& chld : children) {
+            if (chld == child) {
+                isChildFound = true;
+                break;
+            }
+        }
+
+        if (isChildFound) {
+            cout << name << " говорит о " << child->getName();
+            if (mood == GOOD) {
+                cout << ": мой ребенок - " << (child->isHonorsStudent() ? "отличник" : "молодец") << endl;
+            } else {
+                cout << ": мой ребенок бездарь" << endl;
+            }
+        } else {
+            cout << name << " говорит: Это не мой ребенок!" << endl;
+        }
     }
 };
 
@@ -235,26 +311,37 @@ int main() {
     cout << endl;
     cout << endl;
 
-    lesson1.doLesson();
-    student1->printMarks();
-    cout << endl;
 
-    lesson1.doLesson();
-    student1->printMarks();
-    cout << endl;
+    // lesson1.doLesson();
+    // student1->printMarks();
+    // cout << endl;
 
-    lesson1.doLesson();
-    student1->printMarks();
-    cout << endl;
+    // lesson1.doLesson();
+    // student1->printMarks();
+    // cout << endl;
+
+    // lesson1.doLesson();
+    // student1->printMarks();
+    // cout << endl;
 
 
     printHonorsStudents();
+
+    Student* student3 = new Student("Leha");
+
+    Parent* parent1 = new Parent("Evgeniy", GOOD, {student1, student2});
+    parent1->talkAboutEachChild();
+    parent1->talkAboutChildrenInGeneral();
+    parent1->talkAboutRandomChild();
+    parent1->talkAboutSpecificChild(student3);
+    parent1->talkAboutSpecificChild(student1);
 
 
     for (auto student : students) {
         delete student;
     }
     delete teacher1;
+    delete parent1;
 
     return 0;
 }
