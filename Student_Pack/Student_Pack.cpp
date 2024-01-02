@@ -124,6 +124,10 @@ private:
 public:
     Parent(const string& Name, Mood initialMood, const vector<Student*>& Children)
         : name(Name), mood(initialMood), children(Children) {}
+    
+    const vector<Student*>& getChildren() const {
+        return children;
+    }
 
     void changeMood(Mood newMood) {
         mood = newMood;
@@ -250,6 +254,14 @@ private:
 public:
     Lesson(Teacher* Teacher, const vector<Student*>& Student) : teacher(Teacher), students(Student) {}
 
+    Teacher* getTeacher() const {
+        return teacher;
+    }
+
+    const vector<Student*>& getStudents() const {
+        return students;
+    }
+
     void doLesson() {
         for (auto& student : students) {
             int numMarks = rand() % 3 + 1; // от 1 до 3 оценок за урок каждому пришедшему студенту
@@ -257,6 +269,67 @@ public:
                 teacher->giveMoodMark(*student);
             }
         }
+    }
+};
+
+class Meeting {
+private:
+    vector<Teacher*> teachers;
+    vector<Parent*> parents;
+    vector<Lesson*> lessons;
+
+public:
+    Meeting(const vector<Teacher*>& Teachers, const vector<Parent*>& Parents, const vector<Lesson*>& Lessons)
+        : teachers(Teachers), parents(Parents), lessons(Lessons) {}
+
+    void doMeeting() {
+        cout << "Собрание начинается." << endl;
+        vector<Student*> studentsWithoutParent;
+
+        for (auto& lesson : lessons) {
+            bool teacherPresent = false;
+            for (auto& teacher : teachers) {
+                if (teacher == lesson->getTeacher()) {
+                    teacherPresent = true;
+                    break;
+                }
+            }
+
+            for (auto& student : lesson->getStudents()) {
+                bool ifParent = false;
+
+                for (auto& parent : parents) {
+                    for (auto& child : parent->getChildren()) {
+                        if (child == student) {
+                            ifParent = true;
+                            if (teacherPresent) {
+                                parent->talkAboutSpecificChild(student);
+                            }
+                            break;
+                        }
+                    }
+
+                    if (ifParent) {
+                        break;
+                    }
+                }
+
+                if (!ifParent) {
+                    studentsWithoutParent.push_back(student);
+                }
+            }
+        }
+
+        // список студентов, чьи родители отсутствовали на собрании
+        if (!studentsWithoutParent.empty()) {
+            cout << "Список студентов, чьих родителей не было на собрании: ";
+            for (auto& student : studentsWithoutParent) {
+                cout << student->getName() << " ";
+            }
+            cout << endl;
+        }
+
+        cout << "Собрание завершено." << endl;
     }
 };
 
@@ -336,12 +409,16 @@ int main() {
     parent1->talkAboutSpecificChild(student3);
     parent1->talkAboutSpecificChild(student1);
 
+    Meeting* meeting1 = new Meeting({teacher1, teacher2}, {parent1}, {&lesson1});
+    meeting1->doMeeting();
+    
 
     for (auto student : students) {
         delete student;
     }
     delete teacher1;
     delete parent1;
+    delete meeting1;
 
     return 0;
 }
