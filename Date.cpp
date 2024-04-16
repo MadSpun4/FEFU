@@ -6,16 +6,19 @@ class Date {
 private:
     int year, month, day, hour, minute, second;
     bool isOurEra;
-    bool mistakeFlag = false;
- 
-    int daysInMonth(int m, int y) {
-        if (m == 2) {
-            return (abs(y) % 4 == 0 && abs(y) % 100 != 0) || (abs(y) % 400 == 0) ? 29 : 28;
-        } else if (m == 4 || m == 6 || m == 9 || m == 11) {
-            return 30;
-        } else {
-            return 31;
+
+    int daysInMonth(int month) {
+        int daysM = 31;
+        if (month == 1 || month == 3 || month == 5 || month == 7 || month == 8 || month == 10 || month == 12) {
+        daysM = 31;
+        } else if (month == 4 || month == 6 || month == 9 || month == 11) {
+            daysM = 30;
+        } else if (month == 2 && ((this->year % 4 == 0 && this->year % 100 != 0) || (this->year % 400 == 0))) {
+            daysM = 29;
+        } else if (month == 2) {
+            daysM = 28;
         }
+        return daysM;
     }
  
 public:
@@ -35,37 +38,6 @@ public:
         day = dayVal;
         isOurEra = isOurEraVal;
  
-        if ((day < 1) or (day > 31)) {
-            cout << "Day should be between 1 and 31" << endl;
-            mistakeFlag = true;
-        }
- 
-        if (month < 1 or month > 12) {
-            cout << "Month should be between 1 and 12" << endl;
-            mistakeFlag = true;
-        }
- 
-        if (year < 0) {
-            cout << "Year couldn't be less than 0" << endl;
-            mistakeFlag = true;
-        }
- 
-        if ((year % 4 == 0 and year % 100 != 0) or (year % 400 == 0)) {
-            if (month == 2 and (day < 1 or day > 29)) {
-                cout << "In a leap year, February should have days between 1 and 29" << endl;
-                mistakeFlag = true;
-            }
-        } else {
-            if (month == 2 and (day < 1 or day > 28)) {
-                cout << "In a non-leap year, February should have days between 1 and 28" << endl;
-                mistakeFlag = true;
-            }
-        }
- 
-        if ((month == 4 or month == 6 or month == 9 or month == 11) and (day < 1 or day > 30)) {
-            cout << "This month should have days between 1 and 30" << endl;
-            mistakeFlag = true;
-        }
     }
  
     Date(int dayVal, int monthVal, int yearVal, bool isOurEraVal, int hourVal, int minuteVal, int secondVal)
@@ -74,165 +46,216 @@ public:
         minute = minuteVal;
         second = secondVal;
  
-        if (hour < 0 or hour >= 24) {
-            cout << "Hour should be between 0 and 23" << endl;
-            mistakeFlag = true;
-        }
- 
-        if (minute < 0 or minute >= 60) {
-            cout << "Minute should be between 0 and 59" << endl;
-            mistakeFlag = true;
-        }
- 
-        if (second < 0 or second >= 60) {
-            cout << "Second should be between 0 and 59" << endl;
-            mistakeFlag = true;
-        }
+    }
+    Date(const Date& other) {
+        this->isOurEra = other.isOurEra;
+        this->year = other.year;
+        this->month = other.month;
+        this->day = other.day;
+        this->hour = other.hour;
+        this->minute = other.minute;
+        this->second = other.second;
     }
  
     ~Date() {}
  
-    bool getMistakeFlag() {
-        return mistakeFlag;
-    }
- 
-    Date add(int addDays, int addMonths, int addYears, int addHours, int addMinutes, int addSeconds) {
-        int newYear = year + addYears;
-        int newMonth = month + addMonths;
-        int newDay = day + addDays;
-        int newHour = hour + addHours;
-        int newMinute = minute + addMinutes;
-        int newSecond = second + addSeconds;
+    Date add(int addYears, int addMonths, int addDays, int addHours, int addMinutes, int addSeconds) {
+        Date res = *this;
 
-        // Обработка переносов
-        if (newSecond >= 60) {
-            newMinute += newSecond / 60;
-            newSecond %= 60;
+        // Инвертируем значения, если до н.э.
+        if (!res.isOurEra) {
+            addYears = -addYears;
+            addMonths = -addMonths;
+            addDays = -addDays;
+            addHours = -addHours;
+            addMinutes = -addMinutes;
+            addSeconds = -addSeconds;
         }
 
-        if (newMinute >= 60) {
-            newHour += newMinute / 60;
-            newMinute %= 60;
+        // Добавление времени
+        res.second += addSeconds;
+        while (res.second >= 60) {
+            res.minute++;
+            res.second -= 60;
         }
 
-        if (newHour >= 24) {
-            newDay += newHour / 24;
-            newHour %= 24;
+        res.minute += addMinutes;
+        while (res.minute >= 60) {
+            res.hour++;
+            res.minute -= 60;
         }
 
-        if (newYear == 0) {
-            newYear += 1;
-            isOurEra = true;
-        } else {
-            isOurEra = false;
+        res.hour += addHours;
+        while (res.hour >= 24) {
+            res.day++;
+            res.hour -= 24;
         }
 
-        if ((abs(year) < addYears) & (year < 0)) {
-            newYear++;
+        // Добавление дней и месяцев
+        res.month += addMonths;
+        res.day += addDays;
+
+        // Коррекция месяцев и годов
+        while (res.month > 12) {
+            res.month -= 12;
+            res.year++;
         }
 
-        // Для месяцев и лет
-        while (newMonth > 12) {
-            newYear++;
-            if (newYear == 0) {
-                newYear += 1;
-                isOurEra = true;
-            } else {
-                isOurEra = false;
-            }
-            newMonth -= 12;
-        }
-        
-     
-
-        // Для дней в месяцах
-        while (newDay > daysInMonth(newMonth, newYear)) {
-            newDay -= daysInMonth(newMonth, newYear);
-            newMonth++;
-
-            // Переход от BC к AD
-            if (newMonth > 12) {
-                newYear++;
-                newMonth = 1;
-            }
-        }
-
-
-        return Date(newDay, newMonth, newYear, isOurEra, newHour, newMinute, newSecond);
-    }
-
- 
-    Date subtract(int substractDays, int substractMonths, int substractYears, int substractHours, int substractMinutes, int substractSeconds) {
-        int newYear = year - substractYears;
-        int newMonth = month - substractMonths;
-        int newDay = day - substractDays;
-        int newHour = hour - substractHours;
-        int newMinute = minute - substractMinutes;
-        int newSecond = second - substractSeconds;
-
-        // Обработка заемов
-        while (newSecond < 0) {
-            newSecond += 60;
-            newMinute--;
-        }
-
-        while (newMinute < 0) {
-            newMinute += 60;
-            newHour--;
-        }
-
-        while (newHour < 0) {
-            newHour += 24;
-            newDay--;
-        }
-
-        if ((abs(year) <= substractYears) and (year > 0)) {
-            newYear--;
-        }
-        // Для месяцев и лет
-        while (newMonth < 1) {
-            newYear--;
-
-            // Переход от AD к BC
-            if (newYear == 0) {
-                newYear -= 1;
-                isOurEra = false;
-            } else {
-                isOurEra = true;
-            }
-
-            newMonth += 12;
-        }
-
-        if (newDay > daysInMonth(newMonth, newYear)) {
-            newDay = daysInMonth(newMonth, newYear);
-        }
-        // Для дней в месяцах
-        while (newDay < 1) {
-            newMonth--;
-            if (newMonth < 1) {
-                newYear--;
-
-                // Переход от AD к BC
-                if (newYear == 0) {
-                    newYear -= 1;
-                    isOurEra = false;
-                } else {
-                    isOurEra = true;
+        // Коррекция дней и месяцев
+        while (true) {
+            int daysM = res.daysInMonth(res.month);
+            if (res.day > daysM) {
+                res.day -= daysM;
+                res.month++;
+                if (res.month > 12) {
+                    res.month -= 12;
+                    res.year++;
                 }
-
-                newMonth = 12;
+            } else {
+                break;
             }
+        }
 
-            newDay += daysInMonth(newMonth, newYear);
+        // Добавление годов
+        res.year += addYears;
+
+        // Обработка времени
+        while (res.second < 0) {
+            res.minute--;
+            res.second += 60;
+        }
+
+        while (res.minute < 0) {
+            res.hour--;
+            res.minute += 60;
+        }
+
+        while (res.hour < 0) {
+            res.day--;
+            res.hour += 24;
         }
         
+        while (res.day < 1) {
+            res.month--;
+            int daysM = res.daysInMonth(res.month);
+            res.day += daysM; 
+        }
 
-        return Date(newDay, newMonth, newYear, isOurEra, newHour, newMinute, newSecond);
+        while (res.month < 1) {
+            res.year--;
+            res.month += 12;
+        }
+
+        // Коррекция для перехода эр
+        if (!res.isOurEra) {
+            if (res.year <= 0) {
+                res.year = 1 - res.year; // Переход через нулевой год
+                res.isOurEra = true;
+            }
+        } else {
+            if (res.year <= 0) {
+                res.year = 1 - res.year; // Обработка отрицательного года в AD
+                res.isOurEra = false;
+            }
+        }
+
+        return res;
     }
 
+    Date subtract(int substractYears, int substractMonths, int substractDays, int substractHours, int substractMinutes, int substractSeconds) {
+        Date res = *this;
 
- 
+        // Инвертируем значения, если до н.э.
+        if (!res.isOurEra) {
+            substractYears = -substractYears;
+            substractMonths = -substractMonths;
+            substractDays = -substractDays;
+            substractHours = -substractHours;
+            substractMinutes = -substractMinutes;
+            substractSeconds = -substractSeconds;
+        }
+
+        // Обработка времени
+        res.second -= substractSeconds;
+        while (res.second < 0) {
+            res.minute--;
+            res.second += 60;
+        }
+
+        res.minute -= substractMinutes;
+        while (res.minute < 0) {
+            res.hour--;
+            res.minute += 60;
+        }
+
+        res.hour -= substractHours;
+        while (res.hour < 0) {
+            res.day--;
+            res.hour += 24;
+        }
+
+        // Обработка дней и месяцев
+        res.month -= substractMonths;
+        res.day -= substractDays;
+
+        // Коррекция месяцев и годов
+        while (res.month < 1) {
+            res.month += 12;
+            res.year--;
+        }
+
+        // Коррекция дней и месяцев
+        while (res.day < 1) {
+            res.month--;
+            if (res.month < 1) {
+                res.month = 12;
+                res.year--;
+            }
+            int daysM = res.daysInMonth(res.month);
+            res.day += daysM;
+        }
+
+        // Обработка годов и эры
+        res.year -= substractYears;
+        if (res.year <= 0) {
+            int remainingYears = 1 - res.year; // +1 для коррекции нулевого года
+            res.year = remainingYears;
+            res.isOurEra = !res.isOurEra; // Смена эры
+        }
+
+        // Обработка времени
+        while (res.second >= 60) {
+            res.minute++;
+            res.second -= 60;
+        }
+
+        while (res.minute >= 60) {
+            res.hour++;
+            res.minute -= 60;
+        }
+
+        while (res.hour >= 24) {
+            res.day++;
+            res.hour -= 24;
+        }
+
+        int daysM = res.daysInMonth(res.month);
+        // Коррекция месяцев и дней
+        while (res.day > daysM) {
+            int daysM = res.daysInMonth(res.month);
+            res.month++;
+            res.day -= daysM;
+        }
+
+        // Коррекция месяцев и годов
+        while (res.month > 12) {
+            res.year++;
+            res.month -= 12;
+        }
+
+        return res;
+    }
+
     Date& operator=(const Date& other) {
         if (this != &other) {
             year = other.year;
@@ -242,108 +265,89 @@ public:
             minute = other.minute;
             second = other.second;
             isOurEra = other.isOurEra;
-            mistakeFlag = other.mistakeFlag;
         }
         return *this;
     }
  
     friend ostream& operator<<(ostream& os, const Date& dt) {
-        string eraStr = (dt.year <= -1) ? "BC" : "AD";
- 
-        os << "Date: " << (dt.day >= 0 && dt.day <= 9 ? "0" : "") << dt.day << "/" << (dt.month >= 0 && dt.month <= 9 ? "0" : "") << dt.month << "/"
-        << (abs(dt.year) >= 0 && abs(dt.year) <= 9 ? "000" : "") << (abs(dt.year) >= 10 && abs(dt.year) <= 99 ? "00" : "")
-        << (abs(dt.year) >= 100 && abs(dt.year) <= 999 ? "0" : "") << abs(dt.year) << " " << eraStr << endl;
- 
-        os << "Time: " << (dt.hour >= 0 && dt.hour <= 9 ? "0" : "") << dt.hour << ":" << (dt.minute >= 0 && dt.minute <= 9 ? "0" : "") << dt.minute << ":"
-        << (dt.second >= 0 && dt.second <= 9 ? "0" : "") << dt.second << endl;
- 
+        string eraStr = dt.isOurEra ? "AD" : "BC";
+
+        os << "Date: ";
+        os << (dt.day < 10 ? "0" : "") << dt.day << "/";
+        os << (dt.month < 10 ? "0" : "") << dt.month << "/";
+        os << (dt.year < 1000 ? "0" : "") << (dt.year < 100 ? "0" : "") << (dt.year < 10 ? "0" : "") << dt.year << " ";
+        os << eraStr << endl;
+
+        os << "Time: ";
+        os << (dt.hour < 10 ? "0" : "") << dt.hour << ":";
+        os << (dt.minute < 10 ? "0" : "") << dt.minute << ":";
+        os << (dt.second < 10 ? "0" : "") << dt.second << endl;
+
         return os;
     }
- 
-    Date operator+(const Date& other) const {
+
+    Date operator+(const Date& other)
+    {
         Date res;
         res = *this;
+        res = res.add(other.year, other.month, other.day, other.hour, other.minute, other.second);
 
-        res = res.add(other.day, other.month, other.year, other.hour, other.minute, other.second);
         return res;
     }
  
-    Date& operator+=(const Date& other) {
-        *this = this->add(other.day, other.month, other.year, other.hour, other.minute, other.second);
+    Date& operator+= (const Date& other)
+    {
+        *this = this->add(other.year, other.month, other.day, other.hour, other.minute, other.second);
+
         return *this;
     }
  
-    Date operator-(const Date& other) const {
+    Date operator-(const Date& other)
+    {
         Date res;
         res = *this;
+        res = res.subtract(other.year, other.month, other.day, other.hour, other.minute, other.second);
 
-        res = res.subtract(other.day, other.month, other.year, other.hour, other.minute, other.second);
         return res;
     }
  
-    Date& operator-=(const Date& other) {
-        *this = this->subtract(other.day, other.month, other.year, other.hour, other.minute, other.second);
+    Date& operator-= (const Date& other)
+    {
+        *this = this->subtract(other.year, other.month, other.day, other.hour, other.minute, other.second);
+
         return *this;
     }
  
     friend bool operator>(const Date& first, const Date& second) {
-        return (first.year > second.year) ||
-               (first.year == second.year && first.month > second.month) ||
-               (first.year == second.year && first.month == second.month && first.day > second.day) ||
-               (first.year == second.year && first.month == second.month && first.day == second.day && first.hour > second.hour) ||
-               (first.year == second.year && first.month == second.month && first.day == second.day && first.hour == second.hour && first.minute > second.minute) ||
-               (first.year == second.year && first.month == second.month && first.day == second.day && first.hour == second.hour && first.minute == second.minute && first.second > second.second);
+        return (first.isOurEra > second.isOurEra) ||
+               (first.isOurEra == second.isOurEra && first.year > second.year) ||
+               (first.isOurEra == second.isOurEra && first.year == second.year && first.month > second.month) ||
+               (first.isOurEra == second.isOurEra && first.year == second.year && first.month == second.month && first.day > second.day) ||
+               (first.isOurEra == second.isOurEra && first.year == second.year && first.month == second.month && first.day == second.day && first.hour > second.hour) ||
+               (first.isOurEra == second.isOurEra && first.year == second.year && first.month == second.month && first.day == second.day && first.hour == second.hour && first.minute > second.minute) ||
+               (first.isOurEra == second.isOurEra && first.year == second.year && first.month == second.month && first.day == second.day && first.hour == second.hour && first.minute == second.minute && first.second > second.second);
     }
  
     friend bool operator<(const Date& first, const Date& second) {
-        return (first.year < second.year) ||
-               (first.year == second.year && first.month < second.month) ||
-               (first.year == second.year && first.month == second.month && first.day < second.day) ||
-               (first.year == second.year && first.month == second.month && first.day == second.day && first.hour < second.hour) ||
-               (first.year == second.year && first.month == second.month && first.day == second.day && first.hour == second.hour && first.minute < second.minute) ||
-               (first.year == second.year && first.month == second.month && first.day == second.day && first.hour == second.hour && first.minute == second.minute && first.second < second.second);
+        return (first.isOurEra < second.isOurEra) ||
+               (first.isOurEra == second.isOurEra && first.year < second.year) ||
+               (first.isOurEra == second.isOurEra && first.year == second.year && first.month < second.month) ||
+               (first.isOurEra == second.isOurEra && first.year == second.year && first.month == second.month && first.day < second.day) ||
+               (first.isOurEra == second.isOurEra && first.year == second.year && first.month == second.month && first.day == second.day && first.hour < second.hour) ||
+               (first.isOurEra == second.isOurEra && first.year == second.year && first.month == second.month && first.day == second.day && first.hour == second.hour && first.minute < second.minute) ||
+               (first.isOurEra == second.isOurEra && first.year == second.year && first.month == second.month && first.day == second.day && first.hour == second.hour && first.minute == second.minute && first.second < second.second);
     }
  
     friend bool operator==(const Date& first, const Date& second) {
-        return (first.year == second.year && first.month == second.month && first.day == second.day && first.hour == second.hour && first.minute == second.minute && first.second == second.second);
+        return (first.isOurEra == second.isOurEra && first.year == second.year && first.month == second.month && first.day == second.day && first.hour == second.hour && first.minute == second.minute && first.second == second.second);
     }
 };
  
 int main() {
-    /*Date defaultDate;
-    cout << "Default date: " << endl;
-    cout << defaultDate << endl;
 
-    Date myBirthDayWithTime(1, 1, 1, 1, 1, 1, 1);
-    if (!myBirthDayWithTime.getMistakeFlag()) {
-        cout << "My birthdayWithTime: " << endl;
-        cout << myBirthDayWithTime << endl;
-    }
-    */
-   
-    /*Date myDate(27, 3, 10, 1, 1, 11 ,-0);
-    cout << myDate << endl;
-    myDate = myDate.subtract(0, 1, 0, 0, 0, 360);
-    cout << myDate; */
-    Date lol(28, 2, -1, 0, 23, 59, 59);
-    Date kek(0, 0, 4, 1, 0, 0, 1);
-
-    cout << "lol" << endl;
-    cout << lol << endl;
-    cout << "kek" << endl;
-    cout << kek << endl;
-
-    lol = lol.add(0, 0, 4, 0, 0, 1);
-    cout << "lol after add" << endl;
-    cout << lol << endl;
-
-    lol = lol.subtract(0, 0, 5, 0, 0, 1);
-    cout << "lol after sub" << endl;
-    cout << lol << endl;
-    
-    lol = lol + kek;
-    cout << lol << endl;
-
- 
+    Date d1(1, 1, 2000, 0, 0, 0, 0);
+    cout << d1 << endl;
+    Date d2(d1-d1+d1-d1+d1);
+    cout << d2 << endl; // 2 2 4000 bc -> 1 1 2000 bc -> 2 2 4000 bc -> 1 1 2000 bc
     return 0;
 }
