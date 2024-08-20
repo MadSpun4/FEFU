@@ -1,0 +1,13 @@
+B1041 Allen Dmitry Ivanovich ped 5724
+B3478 Lee Mikhail Petrovich arhitecture 8145
+B6281 Davis Ekaterina Antonovich arhitecture 1942
+B5827 Anderson Egor Fedorovich menegment 153
+B1292 Davis Egor Egorovich politech 9895
+B6447 Brown Daniel Fedorovich ped 9912
+B8667 Anderson Pavel Sidorovich urfuck 3811
+B5322 Lee Alexander Petrovich economic 7711
+B2253 Lee Maxim Alexandrovich menegment 2757
+B3037 Harris Roman Sidorovich ped 778
+B4316 Martin Nikita Mikhailovich politech 106
+B1040 Hall Dmitry Ivanovich himbio 3805
+B7890 Wilson Pavel Vladimirovich himbio 1101
